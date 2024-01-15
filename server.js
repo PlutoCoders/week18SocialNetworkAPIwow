@@ -10,10 +10,19 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+const getUsers = async () => {
+    try {
+        let users = await User.find().select('-__v');
+        return users;
+    } catch (error) {
+        console.log(`Error grabbing Users`, error);
+        return;
+    }
+};
+
 db.once('open', () => {
   app.listen(PORT, () => {
     console.log(`API server running on port ${PORT}!`);
-
     getUsers();
   });
 });

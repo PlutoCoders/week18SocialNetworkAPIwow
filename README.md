@@ -11,3 +11,6 @@ NoSQL Challenge: Social Network API (express.js, mongoose, MongoDB, Insomnia)
 - In addition to using the Express.js Links to an external site. and Mongoose Links to an external site. packages, you may also optionally use a JavaScript date library of your choice or the native JavaScript Date object to format timestamps.
 
 ## Credits
+- I'd like to thank my brother furk who is in the same course as me, and always providing awesome guidance
+- I'd like to thank our tutor strawhat for his constant oversight, teaching, and guidance
+- Big ups to chat gpt and xpert learning assistant for dealing with bugs, explaining how to do things, and speeding through menial tasks!
