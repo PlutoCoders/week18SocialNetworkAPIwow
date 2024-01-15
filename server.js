@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const routes = require('./routes');
+const { User, Thought } = require('./models');
 
 mongoose.connect(process.env.MONGODB_URI || `mongodb://127.0.0.1:27017/socialbook`);
 const db = mongoose.connection;
@@ -9,6 +11,7 @@ const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(routes);
 
 const getUsers = async () => {
     try {
