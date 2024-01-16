@@ -66,6 +66,24 @@ const userController = {
       res.status(500).json(err);
     }
   },
+
+  // delete user (BONUS: and delete associated thoughts)
+  async deleteUser(req, res) {
+    try {
+      const dbUserData = await User.findOneAndDelete({ _id: req.params.userId })
+
+      if (!dbUserData) {
+        return res.status(404).json({ message: 'No user with this id!' });
+      }
+
+      // BONUS: get ids of user's `thoughts` and delete them all
+      await Thought.deleteMany({ _id: { $in: dbUserData.thoughts } });
+      res.json({ message: 'User and associated thoughts deleted!', user: dbUserData });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  },
 }
 
 module.exports = userController;

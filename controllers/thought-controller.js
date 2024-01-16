@@ -68,6 +68,31 @@ const thoughtController = {
     console.log(err);
     res.status(500).json(err);
   },
+
+  // delete thought
+  async deleteThought(req, res) {
+    try {
+      const dbThoughtData = await Thought.findOneAndDelete({ _id: req.params.thoughtId })
+
+      if (!dbThoughtData) { return res.status(404).json({ message: 'Cant find this id!' }); }
+
+      // remove thought id from user's `thoughts` field
+      const dbUserData = User.findOneAndUpdate(
+        { thoughts: req.params.thoughtId },
+        { $pull: { thoughts: req.params.thoughtId } },
+        { new: true }
+      );
+
+      if (!dbUserData) {
+        return res.status(404).json({ message: 'Cant find this thought id!' });
+      }
+
+      res.json({ message: 'Thought removed.', thought: dbThoughtData });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  },
 }
 
 module.exports = thoughtController;
