@@ -67,7 +67,6 @@ const userController = {
     }
   },
 
-  // delete user (BONUS: and delete associated thoughts)
   async deleteUser(req, res) {
     try {
       const dbUserData = await User.findOneAndDelete({ _id: req.params.userId })
@@ -76,7 +75,6 @@ const userController = {
         return res.status(404).json({ message: 'No user with this id!' });
       }
 
-      // BONUS: get ids of user's `thoughts` and delete them all
       await Thought.deleteMany({ _id: { $in: dbUserData.thoughts } });
       res.json({ message: 'User and associated thoughts deleted!', user: dbUserData });
     } catch (err) {
@@ -84,6 +82,48 @@ const userController = {
       res.status(500).json(err);
     }
   },
-}
+
+    async addFriend(req, res) {
+      try {
+        const dbUserData = await User.findOneAndUpdate({ _id: req.params.userId }, { $addToSet: { friends: req.params.friendId } }, { new: true })
+        .select('-__v')
+        .populate('friends')
+        .populate('thoughts');
+  
+        if (!dbUserData) {
+          return res.status(404).json({ message:'Cant find this id!'});
+        }
+  
+        res.json({
+          message: `Friend Added!`,
+          updatedUser: dbUserData
+        });
+      } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+      }
+    },
+
+    async removeFriend(req, res) {
+      try {
+        const dbUserData = await User.findOneAndUpdate({ _id: req.params.userId }, { $pull: { friends: req.params.friendId } }, { new: true })
+        .select('-__v')
+        .populate('friends')
+        .populate('thoughts');
+  
+        if (!dbUserData) {
+          return res.status(404).json({ message:'Cant find this ID!'});
+        }
+  
+        res.json({
+          message: `Removed friend!`,
+          updatedUser: dbUserData
+        });
+      } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+      }
+    },
+  }
 
 module.exports = userController;
