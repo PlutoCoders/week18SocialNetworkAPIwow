@@ -93,6 +93,50 @@ const thoughtController = {
       res.status(500).json(err);
     }
   },
-}
+
+  async addReaction(req, res) {
+    try {
+      const dbThoughtData = await Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId },
+        { $addToSet: { reactions: req.body } },
+        { runValidators: true, new: true }
+      );
+
+      if (!dbThoughtData) {
+        return res.status(404).json({ message:'Cant find this id!'});
+      }
+
+      res.json({
+        message: `Reaction Added`,
+        updatedThought: dbThoughtData,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  },
+
+  async removeReaction(req, res) {
+    try {
+      const dbThoughtData = await Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId },
+        { $pull: { reactions: { reactionId: req.params.reactionId } } },
+        { runValidators: true, new: true }
+      );
+
+      if (!dbThoughtData) {
+        return res.status(404).json({ message:'Cant find this id!'});
+      }
+
+      res.json({
+        message: `Reaction Deleted`,
+        updatedThought: dbThoughtData
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  },
+};
 
 module.exports = thoughtController;
