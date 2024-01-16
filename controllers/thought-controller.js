@@ -55,6 +55,19 @@ const thoughtController = {
       res.status(500).json(err);
     }
   },
+
+  async updateThought(req, res) {
+    const dbThoughtData = await Thought.findOneAndUpdate({ _id: req.params.thoughtId }, { $set: req.body }, { runValidators: true, new: true });
+
+    if (!dbThoughtData) {
+      return res.status(404).json({ message: 'Cant find this id!' });
+    }
+
+    res.json(dbThoughtData);
+
+    console.log(err);
+    res.status(500).json(err);
+  },
 }
 
 module.exports = thoughtController;
