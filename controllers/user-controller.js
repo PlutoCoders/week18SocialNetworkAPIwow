@@ -1,14 +1,26 @@
 const { User, Thought } = require('../models');
 
+const modifyUser = (usr) => {
+  // If the usr._doc property exists, then use that, else, just use the usr object itself
+  let userObj = usr._doc ? usr._doc : usr;
+  return {
+    ...userObj,
+    // toLocaleString converts your timestamp into a more human-readable format
+    createdAt: userObj.createdAt.toLocaleString(),
+    updatedAt: userObj.updatedAt.toLocaleString(),
+  }
+}
+
 const userController = {
   async getUsers(req, res) {
     try {
-      const dbUserData = await User.find()
+      const dbUsersDataArray = await User.find()
         .select('-__v')
         .populate('friends')
         .populate('thoughts');
 
-      res.json(dbUserData);
+      let modifiedUsers = dbUsersDataArray.map(usr => modifyUser(usr));
+      res.json(modifiedUsers);
     } catch (err) {
       console.log(err);
       res.status(500).json(err);
@@ -36,7 +48,8 @@ const userController = {
   async createUser(req, res) {
     try {
       const dbUserData = await User.create(req.body);
-      res.json({ message: `User Created!`, user: dbUserData });
+      let modifiedUser = modifyUser(dbUserData);
+      res.json({ message: `User Created Successfully`, userCreated: modifiedUser });
     } catch (err) {
       console.log(err);
       res.status(500).json(err);

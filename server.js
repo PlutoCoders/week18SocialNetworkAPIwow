@@ -13,14 +13,29 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(routes);
 
+const modifyUser = (usr) => {
+  return {
+    ...usr._doc,
+    // toLocaleString converts your timestamp into a more human-readable format
+    createdAt: usr._doc.createdAt.toLocaleString(),
+    updatedAt: usr._doc.updatedAt.toLocaleString(),
+  }
+}
+
+// Mofidy our Raw Database Objects into Usable Virtual API Objects
 const getUsers = async () => {
-    try {
-        let users = await User.find().select('-__v');
-        return users;
-    } catch (error) {
-        console.log(`Error grabbing Users`, error);
-        return;
-    }
+  try {
+    let users = await User.find().select('-__v');
+
+    let modifiedUsers = users.map(usr => {
+      return modifyUser(usr);
+    })
+
+    return modifiedUsers;
+  } catch (error) {
+    console.log(`Error grabbing Users`, error);
+    return;
+  }
 };
 
 db.once('open', () => {
